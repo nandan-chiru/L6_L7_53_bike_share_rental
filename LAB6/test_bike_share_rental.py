@@ -113,3 +113,30 @@ def test_adult_with_enough_balance():
 
 def test_adult_with_low_balance():
     assert can_unlock(49, False, 18) is False
+
+# -------------------------
+# Branch boundary tests
+# -------------------------
+
+def test_ride_at_180_minutes():
+    assert ride_cost("standard", 180, False, False) == 120
+
+
+def test_subscriber_31_minute_ride():
+    assert ride_cost("standard", 31, True, False) == 20
+
+
+def test_dock_one_bike():
+    assert dock_status(1, 10) == "few bikes"
+
+
+def test_dock_eight_bikes():
+    assert dock_status(8, 10) == "few slots"
+
+
+def test_unlock_exact_age_16():
+    assert can_unlock(100, False, 16) is True
+
+
+def test_unlock_exact_age_18():
+    assert can_unlock(50, False, 18) is True
