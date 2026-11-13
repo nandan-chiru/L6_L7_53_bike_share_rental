@@ -1,26 +1,76 @@
 def parse_ride_duration(text):
     """
     Converts a ride duration written as HH:MM into minutes.
-    Assumes text always has exactly one colon with digits on both sides.
+    Returns 0 for invalid input.
     """
-    hours, minutes = text.strip().split(':')
-    return int(hours) * 60 + int(minutes)
+    try:
+        if not isinstance(text, str):
+            return 0
+
+        parts = text.strip().split(':')
+
+        if len(parts) != 2:
+            return 0
+
+        hours, minutes = parts
+
+        if not hours.isdigit() or not minutes.isdigit():
+            return 0
+
+        return int(hours) * 60 + int(minutes)
+
+    except (ValueError, TypeError, AttributeError):
+        return 0
+
 
 def format_station_code(code):
     """
     Formats a station code as ZONE-NUMBER, e.g. 'a12' -> 'A-12'.
-    Assumes code is a non-empty string.
+    Returns an empty string for invalid input.
     """
-    code = code.strip().upper()
-    return code[0] + '-' + code[1:]
+    try:
+        if not isinstance(code, str):
+            return ""
+
+        code = code.strip().upper()
+
+        if not code:
+            return ""
+
+        return code[0] + '-' + code[1:]
+
+    except (ValueError, TypeError, AttributeError, IndexError):
+        return ""
+
 
 def parse_ride_log(line):
     """
     Parses 'bike_type,minutes,subscriber' into a tuple.
-    Assumes all three fields are present and minutes is an integer.
+    Returns a safe default tuple for invalid input.
     """
-    parts = line.split(',')
-    return parts[0].strip(), int(parts[1]), parts[2].strip() == 'yes'
+    try:
+        if not isinstance(line, str):
+            return "", 0, False
+
+        parts = line.split(',')
+
+        if len(parts) != 3:
+            return "", 0, False
+
+        bike_type = parts[0].strip()
+
+        try:
+            minutes = int(parts[1].strip())
+        except (ValueError, TypeError):
+            minutes = 0
+
+        subscriber = parts[2].strip().lower() == 'yes'
+
+        return bike_type, minutes, subscriber
+
+    except (ValueError, TypeError, AttributeError, IndexError):
+        return "", 0, False
+
 
 def main():
     print("==== Running parse_ride_duration ====")
@@ -34,6 +84,7 @@ def main():
     print("\n==== Running parse_ride_log ====")
     value = input("Enter a ride log line as type,minutes,subscriber (e.g. electric,45,yes): ")
     print("Parsed ride log:", parse_ride_log(value))
+
 
 if __name__ == "__main__":
     main()
